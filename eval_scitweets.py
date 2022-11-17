@@ -9,18 +9,25 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, preci
 import torch.nn as nn
 from src.data import SciTweetsDataLoader
 
+def softmax(x):
+    exp = np.exp(x)
+    exp_sum = np.sum(np.exp(x), axis=1, keepdims=True)
+    return exp / exp_sum
+
+def sigmoid(z):
+    return 1/(1 + np.exp(-z))
+
+
 def annotate_test_dataframe(pred_output):
     if num_labels == 2:
 
         print(pred_output.predictions)
-        softmax = nn.Softmax(dim=1)
 
         test_df['logits'] = pred_output.predictions[:, 0]
         test_df['pred'] = np.argmax(pred_output.predictions, 1)
         test_df['score'] = softmax(pred_output.predictions)[:, 0]
 
     elif num_labels == 3:
-        sigmoid = nn.Sigmoid(dim=1)
 
         test_df['cat1_logits'] = pred_output.predictions[:, 0]
         test_df['cat2_logits'] = pred_output.predictions[:, 1]
