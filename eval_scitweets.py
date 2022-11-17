@@ -11,11 +11,13 @@ from src.data import SciTweetsDataLoader
 
 def annotate_test_dataframe(pred_output):
     if num_labels == 2:
+
+        print(pred_output.predictions)
         softmax = nn.Softmax(dim=1)
 
-        test_df['logits'] = pred_output.predictions
+        test_df['logits'] = pred_output.predictions[:, 0]
         test_df['pred'] = np.argmax(pred_output.predictions, 1)
-        test_df['score'] = softmax(pred_output.predictions)
+        test_df['score'] = softmax(pred_output.predictions)[:, 0]
 
     elif num_labels == 3:
         sigmoid = nn.Sigmoid(dim=1)
@@ -271,7 +273,6 @@ if __name__ == '__main__':
             compute_metrics=compute_fold_metrics
         )
 
-        print('***** Start Training *****')
         trainer.train()
         print('***** Finished Training *****\n\n\n')
 
