@@ -16,7 +16,7 @@ from src.data import SciTweetsDataLoader
 def annotate_test_dataframe(pred_output):
     predictions = (pred_output.predictions > 0) * 1
 
-    if num_labels == 1:
+    if num_labels == 2:
         test_df['logits'] = pred_output.predictions
         test_df['pred'] = predictions
         #test_df['score'] = sigmoid(pred_output.predictions)
@@ -50,7 +50,7 @@ def compute_fold_metrics(pred_output):
     print(predictions)
     print(labels)
 
-    if num_labels == 1:
+    if num_labels == 2:
         acc = accuracy_score(labels, predictions)
         prec = precision_score(labels, predictions)
         rec = recall_score(labels, predictions)
@@ -99,7 +99,7 @@ def compute_overall_metrics(data):
         pr_table = wandb.Table(dataframe=pr_df)
         return pr_table
 
-    if num_labels == 1:
+    if num_labels == 2:
         scores = data[f'score']
         preds = data[f'pred'] == 1
         labels = data[f'labels'] == 1
@@ -192,7 +192,7 @@ if __name__ == '__main__':
     wandb.config['cat'] = cat
 
     if cat in ['cat1', 'cat2', 'cat3', 'scirelated']:
-        num_labels = 1
+        num_labels = 2
         problem_type = "single_label_classification"
 
     elif cat == "multilabel":
