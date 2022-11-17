@@ -1,17 +1,15 @@
 import os
 from functools import partial
-from itertools import chain
-from typing import Dict, Union, Any, List, Tuple
+from typing import Dict, Union, Any, List
 import ast
 import pandas as pd
-import numpy as np
-import torch
 from datasets import Dataset
-from sklearn.model_selection import KFold, StratifiedKFold
+from sklearn.model_selection import KFold
 from src.preprocess_tweets import preprocess_tweets
 
 if 'SciTweetLMs' not in os.getcwd():
     os.chdir('/home/schellsn/SciTweetLMs') #Change
+
 
 class LMDataLoader:
     @staticmethod
@@ -60,7 +58,6 @@ class SciTweetsDataLoader:
             data['labels'] = data[f'cat1_final_answer']
             data = data[data['labels'] != 0.5]
             data['labels'] = data['labels'].astype(int)
-            print(data['labels'])
 
         elif self.cat == "scirelated":
             print('not implemented yet. Using multilabel instead')

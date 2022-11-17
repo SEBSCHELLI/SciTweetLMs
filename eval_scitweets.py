@@ -6,7 +6,7 @@ import wandb
 from transformers import Trainer, TrainingArguments
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from sklearn.metrics import accuracy_score, precision_score, recall_score, precision_recall_curve, f1_score, average_precision_score, roc_auc_score
-import torch.nn as nn
+
 from src.data import SciTweetsDataLoader
 
 def softmax(x):
@@ -17,11 +17,8 @@ def softmax(x):
 def sigmoid(z):
     return 1/(1 + np.exp(-z))
 
-
 def annotate_test_dataframe(pred_output):
     if num_labels == 2:
-
-        print(pred_output.predictions)
 
         test_df['logits'] = pred_output.predictions[:, 0]
         test_df['pred'] = np.argmax(pred_output.predictions, 1)
@@ -284,7 +281,7 @@ if __name__ == '__main__':
         print('***** Finished Training *****\n\n\n')
 
     print('Evaluate all folds')
-    os.mkdir(f'classifier_preds/{run.name}')
+    os.mkdir(f'output/scitweets/{run.name}')
     data = pd.concat(annotated_test_data)
     data.to_csv(f'classifier_preds/{run.name}/preds.tsv', index=False, sep='\t')
     metrics = compute_overall_metrics(data)
