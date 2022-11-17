@@ -1,39 +1,37 @@
 import os
-import ast
 import copy
-from typing import Dict, Union, Any, T_co, Sequence, TypeVar, List
 import numpy as np
 import pandas as pd
 import wandb
-import transformers
-from transformers import Trainer, TrainingArguments, TrainerCallback, TrainerState, TrainerControl
+from transformers import Trainer, TrainingArguments
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score, precision_score, recall_score, precision_recall_curve, f1_score, average_precision_score, roc_auc_score
+import torch.nn as nn
 from src.data import SciTweetsDataLoader
-
 
 def annotate_test_dataframe(pred_output):
     if num_labels == 2:
+        softmax = nn.Softmax(dim=1)
+
         test_df['logits'] = pred_output.predictions
         test_df['pred'] = np.argmax(pred_output.predictions, 1)
-
-        #test_df['score'] = sigmoid(pred_output.predictions)
+        test_df['score'] = softmax(pred_output.predictions)
 
     elif num_labels == 3:
-        predictions = (pred_output.predictions > 0) * 1
-
-        test_df['cat1_pred'] = predictions[:, 0]
-        test_df['cat2_pred'] = predictions[:, 1]
-        test_df['cat3_pred'] = predictions[:, 2]
+        sigmoid = nn.Sigmoid(dim=1)
 
         test_df['cat1_logits'] = pred_output.predictions[:, 0]
         test_df['cat2_logits'] = pred_output.predictions[:, 1]
         test_df['cat3_logits'] = pred_output.predictions[:, 2]
 
-        #test_df['cat1_score'] = sigmoid(pred_output.predictions[:, 0])
-        #test_df['cat2_score'] = sigmoid(pred_output.predictions[:, 1])
-        #test_df['cat3_score'] = sigmoid(pred_output.predictions[:, 2])
+        predictions = (pred_output.predictions > 0) * 1
+        test_df['cat1_pred'] = predictions[:, 0]
+        test_df['cat2_pred'] = predictions[:, 1]
+        test_df['cat3_pred'] = predictions[:, 2]
+
+        test_df['cat1_score'] = sigmoid(pred_output.predictions[:, 0])
+        test_df['cat2_score'] = sigmoid(pred_output.predictions[:, 1])
+        test_df['cat3_score'] = sigmoid(pred_output.predictions[:, 2])
 
     test_df['fold'] = fold
 
@@ -47,11 +45,8 @@ def compute_fold_metrics(pred_output):
 
     labels = pred_output.label_ids
 
-    print(labels)
-
     if num_labels == 2:
         predictions = np.argmax(pred_output.predictions, 1)
-        print(predictions)
         acc = accuracy_score(labels, predictions)
         prec = precision_score(labels, predictions)
         rec = recall_score(labels, predictions)
@@ -168,16 +163,16 @@ if __name__ == '__main__':
     tokenizer_max_len = 128
     wandb.config['tokenizer_max_len'] = tokenizer_max_len
 
-    n_folds = 10
+    n_folds = 5
     wandb.config['n_folds'] = n_folds
 
-    epochs = 10
+    epochs = 2
     wandb.config['epochs'] = epochs
 
     seed = 0
     wandb.config['seed'] = seed
 
-    dataloader_config = {'per_device_train_batch_size': 8,
+    dataloader_config = {'per_device_train_batch_size': 32,
                          'per_device_eval_batch_size': 64}
     wandb.config.update(dataloader_config)
 
