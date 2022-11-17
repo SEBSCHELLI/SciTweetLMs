@@ -19,7 +19,7 @@ def annotate_test_dataframe(pred_output):
     if num_labels == 2:
         test_df['logits'] = pred_output.predictions
         test_df['pred'] = predictions
-        test_df['score'] = sigmoid(pred_output.predictions)
+        #test_df['score'] = sigmoid(pred_output.predictions)
 
     elif num_labels == 3:
         test_df['cat1_pred'] = predictions[:, 0]
@@ -30,14 +30,13 @@ def annotate_test_dataframe(pred_output):
         test_df['cat2_logits'] = pred_output.predictions[:, 1]
         test_df['cat3_logits'] = pred_output.predictions[:, 2]
 
-        test_df['cat1_score'] = sigmoid(pred_output.predictions[:, 0])
-        test_df['cat2_score'] = sigmoid(pred_output.predictions[:, 1])
-        test_df['cat3_score'] = sigmoid(pred_output.predictions[:, 2])
+        #test_df['cat1_score'] = sigmoid(pred_output.predictions[:, 0])
+        #test_df['cat2_score'] = sigmoid(pred_output.predictions[:, 1])
+        #test_df['cat3_score'] = sigmoid(pred_output.predictions[:, 2])
 
-    test_df['epoch'] = epoch
     test_df['fold'] = fold
 
-    predicted_eval_data.append(eval_data.copy())
+    annotated_test_data.append(test_df.copy())
 
 
 def compute_fold_metrics(pred_output):
@@ -47,6 +46,9 @@ def compute_fold_metrics(pred_output):
 
     predictions = (pred_output.predictions > 0) * 1
     labels = pred_output.label_ids
+
+    print(predictions)
+    print(labels)
 
     if num_labels == 2:
         acc = accuracy_score(labels, predictions)
@@ -92,7 +94,6 @@ def compute_overall_metrics(data):
     def get_pr_table(labels, scores):
         precs, recs, thresholds = precision_recall_curve(labels, scores)
         pr_df = pd.DataFrame({'threshold': thresholds, 'precision': precs[:-1], 'recall': recs[:-1]})
-        pr_df['epoch'] = epoch
         pr_df = pr_df.sample(n=min(1000, len(pr_df)), random_state=0)
         pr_df = pr_df.sort_values(by='threshold')
         pr_table = wandb.Table(dataframe=pr_df)
@@ -280,5 +281,5 @@ if __name__ == '__main__':
     os.mkdir(f'classifier_preds/{run.name}')
     data = pd.concat(annotated_test_data)
     data.to_csv(f'classifier_preds/{run.name}/preds.tsv', index=False, sep='\t')
-    metrics = compute_overall_metrics(epoch, epoch_eval_data)
+    metrics = compute_overall_metrics(data)
     wandb.log(metrics)
