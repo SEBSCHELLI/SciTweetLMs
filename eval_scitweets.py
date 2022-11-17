@@ -14,14 +14,15 @@ from src.data import SciTweetsDataLoader
 
 
 def annotate_test_dataframe(pred_output):
-    predictions = (pred_output.predictions > 0) * 1
-
     if num_labels == 2:
         test_df['logits'] = pred_output.predictions
-        test_df['pred'] = predictions
+        test_df['pred'] = np.argmax(pred_output.predictions, 1)
+
         #test_df['score'] = sigmoid(pred_output.predictions)
 
     elif num_labels == 3:
+        predictions = (pred_output.predictions > 0) * 1
+
         test_df['cat1_pred'] = predictions[:, 0]
         test_df['cat2_pred'] = predictions[:, 1]
         test_df['cat3_pred'] = predictions[:, 2]
@@ -44,13 +45,13 @@ def compute_fold_metrics(pred_output):
     fold_epoch = int(epoch + (fold * epochs))
     metrics = {'fold_epoch': fold_epoch}
 
-    predictions = (pred_output.predictions > 0) * 1
     labels = pred_output.label_ids
 
-    print(predictions)
     print(labels)
 
     if num_labels == 2:
+        predictions = np.argmax(pred_output.predictions, 1)
+        print(predictions)
         acc = accuracy_score(labels, predictions)
         prec = precision_score(labels, predictions)
         rec = recall_score(labels, predictions)
@@ -60,6 +61,8 @@ def compute_fold_metrics(pred_output):
             f'acc': acc, f'prec': prec, f'rec': rec, 'f1': f1})
 
     elif num_labels == 3:
+        predictions = (pred_output.predictions > 0) * 1
+
         cat1_acc = accuracy_score(labels[:, 0], predictions[:, 0])
         cat2_acc = accuracy_score(labels[:, 1], predictions[:, 1])
         cat3_acc = accuracy_score(labels[:, 2], predictions[:, 2])
@@ -243,8 +246,8 @@ if __name__ == '__main__':
 
     for fold in range(n_folds):
         print(f'Fold {fold+1}')
-        #fold_model = copy.deepcopy(model).cuda()
-        fold_model = copy.deepcopy(model)
+        fold_model = copy.deepcopy(model).cuda()
+        #fold_model = copy.deepcopy(model)
 
         train_dataset, test_dataset = dl.get_datasets_for_fold(fold)
         test_df = dl.get_test_df_for_fold(fold).copy()
@@ -261,7 +264,7 @@ if __name__ == '__main__':
             logging_strategy='epoch',
             save_strategy='no',
             evaluation_strategy="epoch",  # evaluate each `logging_steps`
-            no_cuda=True,
+            no_cuda=False,
             report_to='wandb'
         )
 
