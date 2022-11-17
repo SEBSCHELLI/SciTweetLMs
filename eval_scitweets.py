@@ -20,9 +20,9 @@ def sigmoid(z):
 def annotate_test_dataframe(pred_output):
     if num_labels == 2:
 
-        test_df['logits'] = pred_output.predictions[:, 0]
-        test_df['pred'] = np.argmax(pred_output.predictions, 1)
-        test_df['score'] = softmax(pred_output.predictions)[:, 0]
+        test_df[f'{cat}_logits'] = pred_output.predictions[:, 0]
+        test_df[f'{cat}_pred'] = np.argmax(pred_output.predictions, 1)
+        test_df[f'{cat}_score'] = softmax(pred_output.predictions)[:, 0]
 
     elif num_labels == 3:
 
@@ -59,7 +59,7 @@ def compute_fold_metrics(pred_output):
         f1 = f1_score(labels, predictions)
 
         metrics.update({
-            f'acc': acc, f'prec': prec, f'rec': rec, 'f1': f1})
+            f'{cat}_acc': acc, f'{cat}_prec': prec, f'{cat}_rec': rec, f'{cat}_f1': f1})
 
     elif num_labels == 3:
         predictions = (pred_output.predictions > 0) * 1
@@ -104,8 +104,8 @@ def compute_overall_metrics(data):
         return pr_table
 
     if num_labels == 2:
-        scores = data[f'score']
-        preds = data[f'pred'] == 1
+        scores = data[f'{cat}_score']
+        preds = data[f'{cat}_pred'] == 1
         labels = data[f'labels'] == 1
 
         acc = accuracy_score(labels, preds)
@@ -114,24 +114,24 @@ def compute_overall_metrics(data):
         f1 = f1_score(labels, preds)
         aps = average_precision_score(labels, scores)
         roc_auc = roc_auc_score(labels, scores)
-        overall_metrics.update({f'avg_acc': acc,
-                                f'avg_prec': prec,
-                                f'avg_rec': rec,
-                                f'avg_f1': f1,
-                                f'avg_aps': aps,
-                                f'avg_roc_auc': roc_auc,
+        overall_metrics.update({f'{cat}_avg_acc': acc,
+                                f'{cat}_avg_prec': prec,
+                                f'{cat}_avg_rec': rec,
+                                f'{cat}_avg_f1': f1,
+                                f'{cat}_avg_aps': aps,
+                                f'{cat}_avg_roc_auc': roc_auc,
                                 })
 
         # log pr-curve
         pr_table = get_pr_table(labels, scores)
-        overall_metrics.update({f'pr_table': pr_table})
+        overall_metrics.update({f'{cat}_pr_table': pr_table})
 
     elif num_labels == 3:
 
-        for cat in ['cat1', 'cat2', 'cat3']:
-            scores = data[f'{cat}_score']
-            preds = data[f'{cat}_pred'] == 1
-            labels = data[f'{cat}_final_answer'] == 1
+        for _cat in ['cat1', 'cat2', 'cat3']:
+            scores = data[f'{_cat}_score']
+            preds = data[f'{_cat}_pred'] == 1
+            labels = data[f'{_cat}_final_answer'] == 1
 
             acc = accuracy_score(labels, preds)
             prec = precision_score(labels, preds)
@@ -139,17 +139,17 @@ def compute_overall_metrics(data):
             f1 = f1_score(labels, preds)
             aps = average_precision_score(labels, scores)
             roc_auc = roc_auc_score(labels, scores)
-            overall_metrics.update({f'{cat}_avg_acc': acc,
-                                    f'{cat}_avg_prec': prec,
-                                    f'{cat}_avg_rec': rec,
-                                    f'{cat}_avg_f1': f1,
-                                    f'{cat}_avg_aps': aps,
-                                    f'{cat}_avg_roc_auc': roc_auc,
+            overall_metrics.update({f'{_cat}_avg_acc': acc,
+                                    f'{_cat}_avg_prec': prec,
+                                    f'{_cat}_avg_rec': rec,
+                                    f'{_cat}_avg_f1': f1,
+                                    f'{_cat}_avg_aps': aps,
+                                    f'{_cat}_avg_roc_auc': roc_auc,
                                     })
 
             # log pr-curve
             pr_table = get_pr_table(labels, scores)
-            overall_metrics.update({f'{cat}_pr_table': pr_table})
+            overall_metrics.update({f'{_cat}_pr_table': pr_table})
 
     return overall_metrics
 
@@ -169,10 +169,10 @@ if __name__ == '__main__':
     tokenizer_max_len = 128
     wandb.config['tokenizer_max_len'] = tokenizer_max_len
 
-    n_folds = 5
+    n_folds = 10
     wandb.config['n_folds'] = n_folds
 
-    epochs = 2
+    epochs = 10
     wandb.config['epochs'] = epochs
 
     seed = 0
