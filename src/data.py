@@ -88,7 +88,7 @@ class SciTweetsDataLoader:
         kf = KFold(n_splits=self.n_folds, random_state=self.seed, shuffle=True)
         kf.get_n_splits(self.data)
 
-        for fold, (train_index, test_index) in enumerate(kf.split(data)):
+        for fold, (train_index, test_index) in enumerate(kf.split(self.data)):
             assert len(set(train_index).intersection(set(test_index))) == 0
 
             train_dataset = dataset.filter(partial(filter_split, train_index), with_indices=True, batched=True, keep_in_memory=True)
