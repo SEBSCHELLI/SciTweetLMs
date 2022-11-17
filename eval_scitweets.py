@@ -281,8 +281,7 @@ if __name__ == '__main__':
         print('***** Finished Training *****\n\n\n')
 
     print('Evaluate all folds')
-    os.mkdir(f'output/scitweets/{run.name}')
     data = pd.concat(annotated_test_data)
-    data.to_csv(f'classifier_preds/{run.name}/preds.tsv', index=False, sep='\t')
+    data.to_csv(f'output/scitweets/{run.name}_preds.tsv', index=False, sep='\t')
     metrics = compute_overall_metrics(data)
     wandb.log(metrics)
