@@ -57,7 +57,8 @@ class SciTweetsDataLoader:
 
         if self.cat in ['cat1', 'cat2', 'cat3']:
             data['labels'] = data[f'{self.cat}_final_answer']
-            data = data[~data['labels'] == 0.5]
+            data['labels'] = data[f'cat1_final_answer']
+            data = data[data['labels'] != 0.5]
             data['labels'] = data['labels'].astype(int)
             print(data['labels'])
 
