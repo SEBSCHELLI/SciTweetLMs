@@ -57,6 +57,9 @@ class SciTweetsDataLoader:
 
         if self.cat in ['cat1', 'cat2', 'cat3']:
             data['labels'] = data[f'{self.cat}_final_answer']
+            data = data[~data['labels'] == 0.5]
+            data['labels'] = data['labels'].astype(int)
+            print(data['labels'])
 
         elif self.cat == "scirelated":
             print('not implemented yet. Using multilabel instead')
@@ -64,8 +67,7 @@ class SciTweetsDataLoader:
 
         elif self.cat == "multilabel":
             data['labels'] = data[['cat1_final_answer', 'cat2_final_answer', 'cat3_final_answer']].apply(lambda x: [x[0], x[1], x[2]], axis=1)
-
-        data = data[~data['labels'].astype(str).str.contains("0.5")]
+            data = data[~data['labels'].astype(str).str.contains("0.5")]
 
         data = preprocess_tweets(data, **self.preprocessing_config)
 

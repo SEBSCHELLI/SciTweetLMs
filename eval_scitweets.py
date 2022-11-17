@@ -164,7 +164,7 @@ if __name__ == '__main__':
     tokenizer_max_len = 128
     wandb.config['tokenizer_max_len'] = tokenizer_max_len
 
-    n_folds = 128
+    n_folds = 10
     wandb.config['n_folds'] = n_folds
 
     epochs = 128
