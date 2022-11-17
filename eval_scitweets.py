@@ -243,8 +243,8 @@ if __name__ == '__main__':
 
     for fold in range(n_folds):
         print(f'Fold {fold+1}')
-        fold_model = copy.deepcopy(model).cuda()
-        #fold_model = copy.deepcopy(model)
+        #fold_model = copy.deepcopy(model).cuda()
+        fold_model = copy.deepcopy(model)
 
         train_dataset, test_dataset = dl.get_datasets_for_fold(fold)
         test_df = dl.get_test_df_for_fold(fold).copy()
@@ -261,7 +261,7 @@ if __name__ == '__main__':
             logging_strategy='epoch',
             save_strategy='no',
             evaluation_strategy="epoch",  # evaluate each `logging_steps`
-            no_cuda=False,
+            no_cuda=True,
             report_to='wandb'
         )
 
