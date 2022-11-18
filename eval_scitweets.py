@@ -161,11 +161,13 @@ if __name__ == '__main__':
     model_id_or_path = 'vinai/bertweet-base'
     #model_id_or_path = 'allenai/scibert_scivocab_uncased'
     #model_id_or_path = 'cardiffnlp/twitter-roberta-base-sep2022'
+    model_id_or_path = 'digitalepidemiologylab/covid-twitter-bert-v2'
     wandb.config['model_id_or_path'] = model_id_or_path
 
     tokenizer_id_or_path = 'vinai/bertweet-base'
     #tokenizer_id_or_path = 'allenai/scibert_scivocab_uncased'
     #tokenizer_id_or_path = 'cardiffnlp/twitter-roberta-base-sep2022'
+    tokenizer_id_or_path = 'digitalepidemiologylab/covid-twitter-bert-v2'
     wandb.config['tokenizer_id_or_path'] = tokenizer_id_or_path
 
     tokenizer_max_len = 128
