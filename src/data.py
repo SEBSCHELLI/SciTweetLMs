@@ -60,8 +60,8 @@ class SciTweetsDataLoader:
             data['labels'] = data['labels'].astype(int)
 
         elif self.cat == "scirelated":
-            print('not implemented yet. Using multilabel instead')
-            self.cat = "multilabel"
+            data['labels'] = (data[['cat1_final_answer', 'cat2_final_answer', 'cat3_final_answer']]==1).any(axis=1)
+            data['labels'] = data['labels'].astype(int)
 
         elif self.cat == "multilabel":
             data['labels'] = data[['cat1_final_answer', 'cat2_final_answer', 'cat3_final_answer']].apply(lambda x: [x[0], x[1], x[2]], axis=1)
