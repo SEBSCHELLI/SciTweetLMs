@@ -162,12 +162,14 @@ if __name__ == '__main__':
     #model_id_or_path = 'allenai/scibert_scivocab_uncased'
     #model_id_or_path = 'cardiffnlp/twitter-roberta-base-sep2022'
     model_id_or_path = 'digitalepidemiologylab/covid-twitter-bert-v2'
+    model_id_or_path = '/data_ssds/disk11/slinzbach/socioroberta'
     wandb.config['model_id_or_path'] = model_id_or_path
 
     tokenizer_id_or_path = 'vinai/bertweet-base'
     #tokenizer_id_or_path = 'allenai/scibert_scivocab_uncased'
     #tokenizer_id_or_path = 'cardiffnlp/twitter-roberta-base-sep2022'
     tokenizer_id_or_path = 'digitalepidemiologylab/covid-twitter-bert-v2'
+    tokenizer_id_or_path = '/data_ssds/disk11/slinzbach/socioroberta'
     wandb.config['tokenizer_id_or_path'] = tokenizer_id_or_path
 
     tokenizer_max_len = 128
@@ -182,7 +184,7 @@ if __name__ == '__main__':
     seed = 0
     wandb.config['seed'] = seed
 
-    dataloader_config = {'per_device_train_batch_size': 16,
+    dataloader_config = {'per_device_train_batch_size': 32,
                          'per_device_eval_batch_size': 64}
     wandb.config.update(dataloader_config)
 
