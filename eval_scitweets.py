@@ -211,7 +211,6 @@ if __name__ == '__main__':
     num_layers_freezed = False
     wandb.config['num_layers_freezed'] = num_layers_freezed
 
-
     print('load model and tokenizer')
     tokenizer_config = {'pretrained_model_name_or_path': tokenizer_id_or_path,
                         'max_len': tokenizer_max_len}
@@ -240,7 +239,6 @@ if __name__ == '__main__':
                 for i in range(num_layers_freezed):
                     if f'layer.{i}.' in n:
                         param.requires_grad = False
-
 
     print(f'load data')
     dl = SciTweetsDataLoader(cat, tokenizer, n_folds, preprocessing_config, seed)
