@@ -182,7 +182,7 @@ if __name__ == '__main__':
     seed = 0
     wandb.config['seed'] = seed
 
-    dataloader_config = {'per_device_train_batch_size': 24,
+    dataloader_config = {'per_device_train_batch_size': 16,
                          'per_device_eval_batch_size': 64}
     wandb.config.update(dataloader_config)
 
